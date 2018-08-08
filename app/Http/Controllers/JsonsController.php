@@ -12,6 +12,7 @@ use App\Models\OrderGoods;
 use App\Models\Shops;
 use App\Models\Users;
 use App\SignatureHelper;
+use App\SphinxClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,10 +46,18 @@ class JsonsController extends Controller
      */
 
     //商家列表接口
-    public function shops()
+    public function shops(Request $request)
     {
 //        $businessList = Shops::select('id', 'shop_name', 'shop_img', 'shop_rating', 'brand', 'on_time', 'fengniao', 'bao', 'piao', 'zhun', 'start_send', 'send_cost', 'notice', 'discount')->get();
-        $businessList = Shops::get();
+        $keyword = '';
+        if($request->keyword){
+//            dd(1);
+            $keyword = $request->keyword;
+            $businessList = Shops::where('shop_name','like','%'.$keyword.'%')->get();//包含功能分页搜索
+//            dd($businessList);
+        }else{
+            $businessList = Shops::get();//包含功能分页
+        }
         foreach ($businessList as $val) {
             $val['distance'] = rand(2, 20);
             $val['estimate_time'] = 10;
